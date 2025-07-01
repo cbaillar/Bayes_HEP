@@ -1,0 +1,47 @@
+Name: ALICE_2022_I2088201
+Year: 2022
+Summary: Sigma(1385) resonance production in PbPb collisions at 5.02 TeV
+Experiment: ALICE
+Collider: LHC
+InspireID: 2088201
+Status: VALIDATED
+Authors:
+ - Enrico Fragiacomo <enrico.fragiacomo@ts.infn.it>
+References:
+ - 'Eur. Phys. J. C (2023) 83:351'
+ - 'DOI:10.1140/epjc/s10052-023-11475-1'
+ - 'arXiv:2205.13998'
+ - 'ALICE-7190'
+BibKey: ALICE-2022zuc
+BibTex: '@article{ALICE:2022zuc,
+    author = "Acharya, Shreyasi and others",
+    collaboration = "ALICE",
+    title = "{$\Sigma (1385)^{\pm }$ resonance production in Pb\textendash{}Pb collisions at $\sqrt{s_{\textrm{NN}}}~=~5.02$~TeV}",
+    eprint = "2205.13998",
+    archivePrefix = "arXiv",
+    primaryClass = "nucl-ex",
+    reportNumber = "CERN-EP-2022-104",
+    doi = "10.1140/epjc/s10052-023-11475-1",
+    journal = "Eur. Phys. J. C",
+    volume = "83",
+    number = "5",
+    pages = "351",
+    year = "2023"
+}'
+Beams: [PB, PB]
+Energies: [522392.0, 522392.0]
+Reentrant: false
+Description:
+  'Hadronic resonances are used to probe the hadron gas produced in the late stage of heavy-ion collisions since they decay
+  on the same timescale, of the order of 1 to 10 fm/$c$, as the decoupling time of the system. In the hadron gas, (pseudo)elastic
+  scatterings among the products of resonances that decayed before the kinetic freeze-out and regeneration processes counteract
+  each other, the net effect depending on the resonance lifetime, the duration of the hadronic phase, and the hadronic cross sections
+  at play. In this context, the $\Sigma(1385)^\pm$ particle is of particular interest as models predict that regeneration dominates
+  over rescattering despite its relatively short lifetime of about 5.5 fm/$c$. The first measurement of the $\Sigma(1385)^\pm$
+  resonance production at mid-rapidity in Pb-Pb  collisions at $\sqrt{s_\text{NN}}= 5.02$ TeV with the ALICE detector is presented
+  in this Letter. The resonances are reconstructed via their hadronic decay channel, $\Lambda\pi$, as a function of the
+  transverse momentum ($p_\text{T}$) and the collision centrality. The results are discussed in comparison with the measured yield
+  of pions and with expectations from the statistical hadronization model as well as commonly employed event generators,
+  including Angantyr and EPOS3 coupled to the UrQMD hadronic cascade afterburner. None of the models can describe the data.
+  For $\Sigma(1385)^\pm$, a similar behaviour as $\text{K}^\ast(892)^{0}$ is observed in data unlike the predictions
+  of EPOS3 with afterburner.'
