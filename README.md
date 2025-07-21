@@ -50,7 +50,7 @@ cp -r /usr/local/share/Bayes_HEP/Examples/Docker_New_Project .
 
 Edit the following files in `Docker_New_Project/input/Rivet/`:
 
-- \`\` – List of Rivet analyses to run\
+- \`analyses_list.txt\` – List of Rivet analyses to run\
   Example:
 
   ```
@@ -62,9 +62,9 @@ Edit the following files in `Docker_New_Project/input/Rivet/`:
   CMS_2018_I1663452 d03-x01-y01
   ```
 
-- \`\` – Set parameter prior ranges for sampling/tuning
+- \`parameter_prior_list.txt\` – Set parameter prior ranges for sampling/tuning
 
-- \`\` – Default Pythia parameter card used as a template for all runs
+- \`parameter.cmnd\` – Default Pythia parameter card used as a template for all runs
 
 ---
 
@@ -121,9 +121,9 @@ cp -r /usr/local/share/Bayes_HEP/Examples/HPC_New_Project .
 
 Edit the following files in `HPC_New_Project/input/Rivet/`:
 
-- \`\` – List of Rivet analyses (see example above)
-- \`\` – Parameter prior ranges
-- \`\` – Default Pythia template
+- \`analyses_list.txt\` – List of Rivet analyses (see example above)
+- \`parameter_prior_list.txt\` – Parameter prior ranges
+- \`parameter.cmnd\` – Default Pythia template
 
 ---
 
