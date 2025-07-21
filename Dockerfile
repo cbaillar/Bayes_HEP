@@ -22,7 +22,23 @@ SHELL ["/bin/bash", "-c"]
 RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir bilby surmise scikit-learn
 
-# Create working directory
+# Copy Bayes_HEP package to /usr/local/share/Bayes_HEP
+COPY Bayes_HEP /usr/local/share/Bayes_HEP
+
+# Make sure all __init__.py files exist for package recognition
+RUN touch /usr/local/share/Bayes_HEP/__init__.py && \
+    touch /usr/local/share/Bayes_HEP/Design_Points/__init__.py && \
+    touch /usr/local/share/Bayes_HEP/Emulation/__init__.py && \
+    touch /usr/local/share/Bayes_HEP/Calibration/__init__.py
+
+# Set PYTHONPATH so Bayes_HEP is importable everywhere
+ENV PYTHONPATH="/usr/local/lib/python3.10/site-packages:/usr/local/share"
+
+
+# Optionally copy your full project to /workdir for scripts, configs, etc.
+# COPY . /workdir
+
+# Set the working directory
 WORKDIR /workdir
 
 # Default command

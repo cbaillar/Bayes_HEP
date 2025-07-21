@@ -1,0 +1,7 @@
+! Used for Bayesian Parameterization 
+TimeShower:alphaSvalue              = 1
+SpaceShower:alphaSvalue             = 1
+BeamRemnants:primordialKT           = 1
+StringZ:aLund                       = 1
+StringZ:bLund                       = 1
+ColourReconnection:range            = 1

@@ -1,6 +1,0 @@
-! Used for Bayesian Parameterization 
-SpaceShower:alphaSvalue             = 0.148337
-TimeShower:alphaSvalue              = 0.120345
-StringZ:aLund                       = 0.828033
-StringZ:bLund                       = 1.03103
-ColourReconnection:range            = 1.62662
