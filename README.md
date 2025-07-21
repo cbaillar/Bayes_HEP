@@ -1,6 +1,31 @@
 # Bayes\_HEP Instructions
 
-This guide provides step-by-step instructions for running the **Bayes\_HEP** project using Docker or Apptainer (formerly Singularity), both interactively and in batch mode on HPC systems.
+## 🔍 Summary
+
+**Bayes\_HEP** is a modular framework for high-energy physics parameter calibration using Bayesian inference. It integrates:
+
+- **Pythia** for Monte Carlo event generation\
+  📦 Source: [https://pythia.org](https://pythia.org)
+
+- **Rivet** for calculating observables\
+  📦 Source: [https://rivet.hepforge.org](https://rivet.hepforge.org)
+
+- **Surmise** for probabilistic surrogate modeling\
+  📦 Source: [https://surmise.readthedocs.io/en/latest/](https://surmise.readthedocs.io/en/latest/)
+
+- **scikit-learn** for emulator construction (e.g., PCA, Gaussian Process)\
+  📦 Source: [https://scikit-learn.org](https://scikit-learn.org)
+
+- **Bilby** for Bayesian inference (e.g., MCMC sampling)\
+  📦 Source: [https://bilby-dev.github.io/bilby/](https://bilby-dev.github.io/bilby/)
+
+The workflow supports both **interactive** and **batch** modes on **Docker** or **HPC systems using SLURM + Apptainer**. It allows users to:
+
+1. Generate design points from parameter priors
+2. Run physics simulations and extract Rivet observables
+3. Train emulators on model predictions
+4. Perform Bayesian calibration using experimental data
+5. Analyze and visualize posterior results
 
 ---
 
@@ -175,14 +200,3 @@ sbatch HPC_New_Project/Batch_Rivet/run_bayes.slurm
 - Double-check all `.slurm` and `.sh` files for correct paths and parameters.
 - SLURM output and error logs will be saved in the locations specified in your scripts.
 - Rebuild or restart containers after modifying input files or source code.
-
----
-
-## ❓ Need Help?
-
-If you encounter errors:
-
-- Check SLURM logs for job status and error messages
-- Ensure all paths and inputs are correct
-- Contact your system administrator or project maintainer for support
-
