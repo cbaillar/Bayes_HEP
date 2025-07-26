@@ -16,7 +16,7 @@ for ANALYSIS in "${ANALYSIS_LIST[@]}"; do
   STATUS=""
   BUILD_STATUS=""
 
-  if [ -f "${RIVET_ANALYSES_PATH}/${ANALYSIS}.cc" ]; then
+  if [ -f "${RIVET_ANALYSES_PATH}/${ANALYSIS}/${ANALYSIS}.cc" ]; then
     echo "Analysis file found for $ANALYSIS"
     cd "${RIVET_ANALYSES_PATH}/$ANALYSIS"
     STATUS="found"
