@@ -11,7 +11,7 @@ import sys
 ###########################################################
 ################### SCRIPT PARAMETERS #####################
 work_dir= os.environ.get('WORKDIR', '/workdir')  # Default to /workdir
-main_dir = f"{work_dir}/Docker_New_Project"
+main_dir = f"{work_dir}/HPC_New_Project"
 seed = 43                   #seed for LHS
 model_seed = 283            #seed for model
 
