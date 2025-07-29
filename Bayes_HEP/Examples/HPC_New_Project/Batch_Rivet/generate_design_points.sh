@@ -2,7 +2,7 @@
 
 # === Config ===
 USER_DIR="/lustre/isaac24/proj/UTK0244/cbaillar"
-COLLISIONS="pp_7000 pp_13000" #"pp_7000 pp_13000"
+COLLISIONS="pp_200 pp_7000" #"pp_7000 pp_13000"
 TOTAL_POINTS=10        # Total number of design points
 TOTAL_EVENTS=100    # Total number of events
 NEVENTS=50          # Events per job

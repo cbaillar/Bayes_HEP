@@ -21,7 +21,7 @@ main_dir = f"{work_dir}/Docker_New_Project"
 seed = 43 
 
 clear_output = True         #clear output directory
-Coll_System = ['pp_7000']   #['AuAu_200', 'PbPb_2760', 'PbPb_5020']
+Coll_System = ['pp_200']   #['AuAu_200', 'PbPb_2760', 'PbPb_5020']
 
 model = 'pythia8'
 dmax = True                 #turn detmax on or off

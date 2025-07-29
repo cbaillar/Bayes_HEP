@@ -6,7 +6,7 @@ DO_RIVET_MERGE=true
 DO_WRITE_INPUTS=true
 
 # === Config ===
-COLLISIONS="pp_7000"    #"pp_7000 pp_13000"
+COLLISIONS="pp_200"    #"pp_7000 pp_13000"
 TOTAL_POINTS=5          # Total number of design points
 TOTAL_EVENTS=10         # Total number of events across all jobs
 NEVENTS=10              # Events per job

@@ -1,5 +1,5 @@
 # Start from a specific tested version
-FROM hepstore/rivet-pythia:latest
+FROM hepstore/rivet-pythia:4.1.0
 
 # Set environment to non-interactive
 ENV DEBIAN_FRONTEND=noninteractive
@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     cmake \
     build-essential \
+    vim \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set default shell to bash
@@ -30,6 +31,8 @@ RUN touch /usr/local/share/Bayes_HEP/__init__.py && \
     touch /usr/local/share/Bayes_HEP/Design_Points/__init__.py && \
     touch /usr/local/share/Bayes_HEP/Emulation/__init__.py && \
     touch /usr/local/share/Bayes_HEP/Calibration/__init__.py
+
+RUN chmod -R a+rwX /usr/local/share/Bayes_HEP
 
 # Set PYTHONPATH so Bayes_HEP is importable everywhere
 ENV PYTHONPATH="/usr/local/lib/python3.10/site-packages:/usr/local/share"

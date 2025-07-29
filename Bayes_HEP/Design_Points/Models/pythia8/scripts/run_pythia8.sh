@@ -1,4 +1,5 @@
 #!/bin/bash
+
 ANALYSES=$1
 INPUT_DIR=$2
 PROJECT_DIR=$3
@@ -22,7 +23,7 @@ TUNES_PATH=/usr/local/share/Pythia8/tunes   # https://pythia.org/latest-manual/W
 
 OUTPUT=${MODEL}_${COLLISION}_${ECM}_s${SEED}_n${NEVENTS}
 #TEMP=/workdir/${PROJECT_DIR}/Models/${MODEL}/YODA/runs/${OUTPUT}_${COLLISION}_${MERGE_TAG}
-TEMP=${PROJECT_DIR}/Models/${MODEL}/YODA/runs/${OUTPUT}_${MERGE_TAG}
+TEMP=${PROJECT_DIR}/Models/${MODEL}/Runs/${OUTPUT}_${MERGE_TAG}
 
 mkdir -p "$TEMP"
 cd "$TEMP" || exit 1
@@ -30,6 +31,10 @@ cd "$TEMP" || exit 1
 cp ${PYPATH}/main144.cmnd .
 cp ${PYPATH}/main144Rivet.cmnd .
 cp ${INPUT_DIR}/parameter.cmnd .
+
+
+MERGE_DIR=${PROJECT_DIR}/Models/${MODEL}/YODA/${MODEL}_${COLLISION}_${ECM}_${MERGE_TAG}
+mkdir -p "$MERGE_DIR"
 
 # ── Update main144.cmnd ──────────────────────────────────
 
@@ -129,7 +134,11 @@ for ANALYSIS in "${ANALYSIS_ARR[@]}"; do
         exit 1
     fi
     # Copy the plugin (assumes it’s called Rivet*.so / .cc etc.)
+    #cp "${WORK_PATH}/Rivet_Analyses/${ANALYSIS}/"* .
     cp "${WORK_PATH}/Rivet_Analyses/${ANALYSIS}/Rivet"* .
+    cp "${WORK_PATH}/Rivet_Analyses/${ANALYSIS}/"*.yoda* .
+
+    cp "${WORK_PATH}/Rivet_Analyses/${ANALYSIS}/"* ${MERGE_DIR}/.
 
     if [ "$COLLISION" != "pp" ]; then
         TAGGED_ANALYSIS="${ANALYSIS}:cent=GEN:beam=${COLLISION}"
@@ -160,5 +169,6 @@ pythia8-main144 -c main144.cmnd -c ${PYPATH}/main144HepMC.cmnd -c main144Rivet.c
 
 pkill -f "cat ${OUTPUT}.hepmc"
 rm -f ${OUTPUT}.hepmc
+
 
 rm *.so 

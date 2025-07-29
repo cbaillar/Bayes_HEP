@@ -12,7 +12,7 @@
 ########### USER-CUSTOMIZABLE VARIABLES #################
 
 USER_DIR="/lustre/isaac24/proj/UTK0244/cbaillar"
-COLLISIONS="pp_7000"
+COLLISIONS="pp_200"
 MODEL="pythia8"
 N_WALKERS=50        # Number of Random walkers for emcee sampler
 NPOOL=10

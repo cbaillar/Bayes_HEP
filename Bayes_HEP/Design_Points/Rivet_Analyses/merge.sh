@@ -7,7 +7,12 @@ ECM=$4
 MERGE_TAG=$5
 
 OUTPUT=${MODEL}_${COLLISION}_${ECM}_${MERGE_TAG}
+OUTPUT_DIR=${PROJECT_DIR}/Models/${MODEL}/YODA/${OUTPUT}
 
-rivet-merge -o ${PROJECT_DIR}/Models/${MODEL}/YODA/${OUTPUT}.yoda ${PROJECT_DIR}/Models/${MODEL}/YODA/runs/${MODEL}_${COLLISION}_${ECM}_*_${MERGE_TAG}/*.yoda
+#mkdir -p ${OUTPUT_DIR}
+cd ${OUTPUT_DIR}
+cp ${PROJECT_DIR}/Models/${MODEL}/Runs/${MODEL}_${COLLISION}_${ECM}_*_${MERGE_TAG}/${MODEL}_*.yoda .
 
-echo "Run completed. Merged output saved to ${PROJECT_DIR}/Models/${MODEL}/YODA/${OUTPUT}.yoda"
+rivet-merge --pwd -o ${OUTPUT_DIR}/${OUTPUT}.yoda ${MODEL}_*.yoda
+
+echo "Run completed. Merged output saved to ${OUTPUT_DIR}/${OUTPUT}.yoda"

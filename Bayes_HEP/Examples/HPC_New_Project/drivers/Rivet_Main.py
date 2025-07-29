@@ -16,7 +16,7 @@ seed = 43                   #seed for LHS
 model_seed = 283            #seed for model
 
 clear_rivet_models = True          #clear rivet directory
-Coll_System = ['pp_7000']   #Rivet example
+Coll_System = ['pp_200', 'pp_7000']   #Rivet example
 Get_Design_Points = True   #True: uses LHS to get design points False: loads design points in input file
 nsamples = 2              #number of design points
 model = 'pythia8'           #only pythia8 (atm)

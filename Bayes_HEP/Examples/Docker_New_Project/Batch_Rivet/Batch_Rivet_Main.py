@@ -26,7 +26,7 @@ parser.add_argument("--Run_Batch", type=lambda x: x.lower() == "true", default=T
 parser.add_argument("--nevents", type=int, default=1000)
 parser.add_argument("--Rivet_Merge", type=lambda x: x.lower() == "true", default=True)
 parser.add_argument("--Write_input_Rivet", type=lambda x: x.lower() == "true", default=True)
-parser.add_argument("--Coll_System", nargs="+", default=["pp_7000"],
+parser.add_argument("--Coll_System", nargs="+", default=["pp_200"],
                     help="List of collision systems (e.g. pp_7000 pPb_5020)")
 
 # Optional positional arguments for batching
