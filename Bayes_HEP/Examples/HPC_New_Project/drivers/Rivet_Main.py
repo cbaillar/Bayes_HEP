@@ -22,6 +22,7 @@ nsamples = 2              #number of design points
 model = 'pythia8'           #only pythia8 (atm)
 Run_Model = True            #run design points through model and Rivet
 nevents = 100              # number of events for model in each run
+Rivet_Merge =True
 Write_input_Rivet = True    #gets Data/Pred info from html files 
 
 ###########################################################
@@ -123,14 +124,16 @@ if Run_Model:
             # Run the model
             subprocess.run(['bash', f'/usr/local/share/Bayes_HEP/Design_Points/Models/{model}/scripts/run_{model}.sh', ','.join(analyses_list), input_dir, project_dir, System, Energy, str(nevents), str(model_seed), param_tag, merge_tag], check=True)
 
-
-############# Write out Data/Prediction Files #################
-if Write_input_Rivet:
-    os.makedirs(f"{main_dir}/input/Data", exist_ok=True)
-    os.makedirs(f"{main_dir}/input/Prediction", exist_ok=True)
-
+############# Rivet Merge/HTML #################
+if Rivet_Merge:
     for system in Coll_System:
         System, Energy = system.split('_')
+
+        system_analyses = analyses_list[system]
+        print(system_analyses)
+        if not system_analyses:
+            print(f"⚠️ No analyses listed for {system}")
+            continue
 
         for i, point in enumerate(design_points):
             
@@ -138,24 +141,38 @@ if Write_input_Rivet:
 
             # Merge results
             subprocess.run(['bash', '/usr/local/share/Bayes_HEP/Design_Points/Rivet_Analyses/merge.sh', project_dir, model, System, Energy, merge_tag], check=True)
-
-            # Generate HTML report
-            subprocess.run(['bash', '/usr/local/share/Bayes_HEP/Design_Points/Rivet_Analyses/mkhtml.sh', ','.join(analyses_list), project_dir, model, System, Energy, merge_tag], check=True)
             
-            DP = i + 1
+            # Generate HTML report
+            subprocess.run(['bash', '/usr/local/share/Bayes_HEP/Design_Points/Rivet_Analyses/mkhtml.sh', project_dir, model, System, Energy, merge_tag], check=True)
+          
 
-            for analysis in analyses_list:
-                for hist in tagged_analyses[system_tag][analysis]:
-                    Experiment = analysis.split('_')[0]
+############# Write out Data/Prediction Files #################
+if Write_input_Rivet:
+    os.makedirs(f"{main_dir}/input/Data", exist_ok=True)
+    os.makedirs(f"{main_dir}/input/Prediction", exist_ok=True)
+ 
+    for system in Coll_System:
+            System, Energy = system.split('_')
 
-                    base = f"{project_dir}/Models/{model}/html_reports/{model}_{System}_{Energy}_DP_{DP}_{analysis}_report.html/{analysis}/{hist}"
-                    datafile = base + "__data.py"
-                    labelfile = base + ".py"
-                    raw_obs, raw_subobs, obs_clean, subobs_clean = RivetParser.extract_labels(labelfile)
+            system_analyses = analyses_list[system]
+            print(system_analyses)
 
-                    input_data_name = f"{main_dir}/input/Data/Data__{Energy}__{System}__{obs_clean}__{subobs_clean}_{Experiment}__{hist}"
-                    input_pred_name = f"{main_dir}/input/Prediction/Prediction__{model}__{Energy}__{System}__{obs_clean}__{subobs_clean}_{Experiment}__{hist}"
+            for i, point in enumerate(design_points):
+                DP = i + 1
 
-                    RivetParser.extract_data(datafile, model, input_data_name, input_pred_name, DP)
+                for analysis in system_analyses:
+                    for hist in tagged_analyses[system][analysis]:
+                        Experiment = analysis.split('_')[0]
+
+                        base = f"{project_dir}/Models/{model}/html_reports/{model}_{System}_{Energy}_DP_{DP}_report.html/{analysis}/{hist}"
+                        datafile = base + "__data.py"
+                        labelfile = base + ".py"
+                        raw_obs, raw_subobs, obs_clean, subobs_clean = RivetParser.extract_labels(labelfile)
+
+                        input_data_name = f"{main_dir}/input/Data/Data__{Energy}__{System}__{obs_clean}__{subobs_clean}_{Experiment}__{hist}"
+                        input_pred_name = f"{main_dir}/input/Prediction/Prediction__{model}__{Energy}__{System}__{obs_clean}__{subobs_clean}_{Experiment}__{hist}"
+
+                        RivetParser.extract_data(datafile, model, input_data_name, input_pred_name, DP)
+
 
 print("done")

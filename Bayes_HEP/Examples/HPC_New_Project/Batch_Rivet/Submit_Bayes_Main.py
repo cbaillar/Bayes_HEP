@@ -31,7 +31,6 @@ parser.add_argument("--clear_output", type=str2bool, default=True)
 parser.add_argument("--Coll_System", nargs="+", default=["pp_7000"],
     help="List of collision systems (e.g. pp_7000 pPb_5020)")
 parser.add_argument("--model", type=str, default="pythia8")
-parser.add_argument("--dmax", type=str2bool, default=True)
 parser.add_argument("--train_size", type=int, default=80,
     help="Percentage of design points for training")
 parser.add_argument("--validation_size", type=int, default=20,
@@ -60,7 +59,6 @@ seed = args.seed
 clear_output = args.clear_output
 Coll_System = args.Coll_System
 model = args.model
-dmax = args.dmax
 train_size = args.train_size
 validation_size = args.validation_size
 Train_Surmise = args.Train_Surmise
@@ -88,9 +86,9 @@ os.makedirs(output_dir + "/plots", exist_ok=True)
 print("Loading design points from input directory.")
 RawDesign = Reader.ReadDesign(f'{main_dir}/input/Design/Design__Rivet.dat')
 priors, parameter_names, dim= DesignPoints.get_prior(RawDesign)
-train_points, validation_points, train_indices, validation_indices = DesignPoints.load_data(train_size, validation_size, RawDesign['Design'], priors, seed, dmax)
+train_points, validation_points, train_indices, validation_indices = DesignPoints.load_data(train_size, validation_size, RawDesign['Design'], priors, seed)
 
-Plots.plot_design_points(train_points, validation_points, priors, detmax=dmax)
+Plots.plot_design_points(train_points, validation_points, priors)
 plt.suptitle(f"Design Point Parameter Space", fontsize=18)
 plt.savefig(f"{output_dir}/plots/Design_Points.png")
 plt.show()

@@ -66,7 +66,7 @@ def get_design(n_samples, priors, seed):
     return scaled_samples
 
 
-def load_data(train_size, validation_size, design_points, priors, seed, dmax):
+def load_data(train_size, validation_size, design_points, priors, seed):
 
     if design_points is None:
         n_samples = train_size + validation_size
@@ -83,14 +83,10 @@ def load_data(train_size, validation_size, design_points, priors, seed, dmax):
         train_size = int(len(scaled_samples) * (train_size * 0.01)) 
         validation_size = int(len(scaled_samples) * (validation_size * 0.01)) 
 
-    if dmax == True:
-        _, initidx, inidx = detmax(scaled_samples, train_size)
-        print('detmax')
-    else: 
-        # need to work this without seed
-        np.random.seed(seed)
-        inidx = np.random.choice(range(len(scaled_samples)), size=train_size, replace=False)
-    
+    #Using DETMX
+    _, initidx, inidx = detmax(scaled_samples, train_size)
+
+           
     train_indices = np.array(inidx)
     remaining_indices = np.setdiff1d(np.arange(len(scaled_samples)), train_indices)
     validation_indices = remaining_indices[:validation_size]

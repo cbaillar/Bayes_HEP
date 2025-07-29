@@ -1,9 +1,8 @@
 # Version 0.0
 # - Design points to be generated
-# Parameter FSRalphaS ISRalphaS primordialKT aLund bLund CRrange
-# - Parameter FSRalphaS:     Linear [0.12, 0.15]  
-# - Parameter ISRalphaS:     Linear [0.12, 0.15]  
-# - Parameter primordialKT:  Linear [1.0, 3.0]     
-# - Parameter aLund:         Linear [0.5, 1.0]     
-# - Parameter bLund:         Linear [0.6, 1.6]     
-# - Parameter CRrange:       Linear [1.5, 2.5]  
+# Parameter pT0Ref ecmPow coreRadius coreFraction CRrange
+# - Parameter pT0Ref:       Linear [0.5, 2.5]  
+# - Parameter ecmPow:       Linear [0.0, 0.25]  
+# - Parameter coreRadius:   Linear [0.1, 1.0]     
+# - Parameter coreFraction: Linear [0.0, 1.0]     
+# - Parameter CRrange:      Linear [1.0, 9.0]    

@@ -5,7 +5,7 @@ import corner
 from matplotlib.lines import Line2D
 import pandas as pd
             
-def plot_design_points(train_points, validation_points, priors, detmax):
+def plot_design_points(train_points, validation_points, priors):
     param_names = list(priors.keys())  # Extract parameter names from priors
     num_params = len(param_names)  # Get the number of parameters
 

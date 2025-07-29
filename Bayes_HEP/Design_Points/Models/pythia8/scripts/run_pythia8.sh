@@ -88,10 +88,6 @@ sed -i \
       -e "s/^\(SoftQCD:all *= *\).*\(!.*\)/\1${SOFTQCD}                        \2/" \
       main144.cmnd
 
-if [ COLLISION  == "pp" ]; then
-    sed -i "/^Beams:eCM.*/a Tune:pp = ${TUNE}                       ! Tune setting" main144.cmnd
-fi
-
 
 # ── Update parameter.cmnd ──────────────────────────────────
 # 1) Parse PARAM_TAG, just collect the values
@@ -101,15 +97,25 @@ for ((i=1; i<${#ARR[@]}; i+=2)); do
     VALUES+=("${ARR[i]}")
 done
 
-# 2) Overwrite parameter.cmnd values in order
+# 2) Overwrite only tuning parameters (after marker)
 val_idx=0
 tmpfile=$(mktemp)
-while IFS= read -r line; do
-    # Only change lines that are not blank and not starting with '!' or '#'
-    if [[ "$line" =~ ^[[:space:]]*([A-Za-z0-9_:.]+)[[:space:]]*= ]]; then
+overwrite_mode=false
+
+while IFS= read -r line || [[ -n $line ]]; do
+    trimmed_line=$(echo "$line" | xargs)
+
+    # Start overwriting after this marker
+    if [[ "$trimmed_line" == "! These are tuning parameters" ]]; then
+        overwrite_mode=true
+        echo "$line" >> "$tmpfile"
+        continue
+    fi
+
+    if $overwrite_mode && [[ "$line" =~ ^[[:space:]]*([A-Za-z0-9_:.]+)[[:space:]]*= ]]; then
         if [[ $val_idx -lt ${#VALUES[@]} ]]; then
-            key=$(echo "$line" | cut -d= -f1)
-            echo "$key= ${VALUES[$val_idx]}" >> "$tmpfile"
+            key=$(echo "$line" | cut -d= -f1 | xargs)
+            echo "$key = ${VALUES[$val_idx]}" >> "$tmpfile"
             ((val_idx++))
         else
             echo "$line" >> "$tmpfile"

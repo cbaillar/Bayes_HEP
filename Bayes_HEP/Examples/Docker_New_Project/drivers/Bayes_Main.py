@@ -24,7 +24,6 @@ clear_output = True         #clear output directory
 Coll_System = ['pp_200']   #['AuAu_200', 'PbPb_2760', 'PbPb_5020']
 
 model = 'pythia8'
-dmax = True                 #turn detmax on or off
 train_size = 80             #percentage of design points used for training
 validation_size = 20        #percentage of design points used for validation
 
@@ -59,9 +58,9 @@ os.makedirs(output_dir + "/plots", exist_ok=True)
 print("Loading design points from input directory.")
 RawDesign = Reader.ReadDesign(f'{main_dir}/input/Design/Design__Rivet.dat')
 priors, parameter_names, dim= DesignPoints.get_prior(RawDesign)
-train_points, validation_points, train_indices, validation_indices = DesignPoints.load_data(train_size, validation_size, RawDesign['Design'], priors, seed, dmax)
+train_points, validation_points, train_indices, validation_indices = DesignPoints.load_data(train_size, validation_size, RawDesign['Design'], priors, seed)
 
-Plots.plot_design_points(train_points, validation_points, priors, detmax=dmax)
+Plots.plot_design_points(train_points, validation_points, priors)
 plt.suptitle(f"Design Point Parameter Space", fontsize=18)
 plt.savefig(f"{output_dir}/plots/Design_Points.png")
 plt.show()

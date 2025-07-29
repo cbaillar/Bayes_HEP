@@ -23,6 +23,7 @@ nsamples = 2              #number of design points
 model = 'pythia8'           #only pythia8 (atm)
 Run_Model = True            #run design points through model and Rivet
 nevents = 100              # number of events for model in each run
+Rivet_Merge =True
 Write_input_Rivet = True   #gets Data/Pred info from html files 
 
 ###########################################################
@@ -156,49 +157,11 @@ if Run_Model:
             merge_tag = f"DP_{i+1}"
 
             subprocess.run([
-                'bash',
-                f'/usr/local/share/Bayes_HEP/Design_Points/Models/{model}/scripts/run_{model}.sh',
+                'bash', f'/usr/local/share/Bayes_HEP/Design_Points/Models/{model}/scripts/run_{model}.sh',
                 ','.join(system_analyses), input_dir, project_dir, System, Energy, str(nevents), str(model_seed), param_tag, merge_tag], check=True)
 
-#if Run_Model:
-#    if design_points is None:
-#        print("Design points not found. Need to generate design points first.")
-#        exit(1)
-#        
-#    for system in Coll_System:
-#        System, Energy = system.split('_', 1)  # safer if ECM has underscore
-#        print("system:", system)
-#
-#        if system not in tagged_analyses_list:
-#            raise ValueError(f"No analyses defined for system '{system}'")
-#
-#        system_analyses = tagged_analyses_list[system]
-#        analyses_str = ','.join(system_analyses)
-#
-#        for i, point in enumerate(design_points):
-#            print(f"Running {model} for Design Point {i+1}: {point}")
-#            param_tag = DesignPoints.generate_param_tag(parameter_names, point)
-#            merge_tag = f"DP_{i+1}"
-#
-#            subprocess.run([
-#                'bash',
-#                f'/usr/local/share/Bayes_HEP/Design_Points/Models/{model}/scripts/run_{model}.sh',
-#                analyses_str,
-#                input_dir,
-#                project_dir,
-#                System,
-#                Energy,
-#                str(nevents),
-#                str(model_seed),
-#                param_tag,
-#                merge_tag
-#            ], check=True)
-
-############# Write out Data/Prediction Files #################
-if Write_input_Rivet:
-    os.makedirs(f"{main_dir}/input/Data", exist_ok=True)
-    os.makedirs(f"{main_dir}/input/Prediction", exist_ok=True)
-
+############# Rivet Merge/HTML #################
+if Rivet_Merge:
     for system in Coll_System:
         System, Energy = system.split('_')
 
@@ -217,7 +180,13 @@ if Write_input_Rivet:
             
             # Generate HTML report
             subprocess.run(['bash', '/usr/local/share/Bayes_HEP/Design_Points/Rivet_Analyses/mkhtml.sh', project_dir, model, System, Energy, merge_tag], check=True)
-            
+          
+
+############# Write out Data/Prediction Files #################
+if Write_input_Rivet:
+    os.makedirs(f"{main_dir}/input/Data", exist_ok=True)
+    os.makedirs(f"{main_dir}/input/Prediction", exist_ok=True)
+ 
     for system in Coll_System:
             System, Energy = system.split('_')
 

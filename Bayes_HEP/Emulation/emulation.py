@@ -67,21 +67,21 @@ def train_scikit(Emulators, x, y_train_results, train_points, validation_points,
         combined_train = np.array(combined_train)
         combined_val = np.array(combined_val)
 
-        ##############################
-        if method_type = "PCA":
-            scaler = sklearn_preprocessing.StandardScaler()
-            pca = sklearn_decomposition.PCA(n_components=max_n_components, svd_solver='full', whiten=False) # Include all PCs here, so we can access them later
-            Y_pca = pca.fit_transform(scaler.fit_transform(Y))
-            Y_pca_truncated = Y_pca[:,:config.n_pc]    # Select PCs here
-            Y_reconstructed_truncated = Y_pca_truncated.dot(pca.components_[:config.n_pc,:])
-            Y_reconstructed_truncated_unscaled = scaler.inverse_transform(Y_reconstructed_truncated)
-            explained_variance_ratio = pca.explained_variance_ratio_
-
-
-            emulators = [sklearn_gaussian_process.GaussianProcessRegressor(kernel=kernel,
-                                                             alpha=config.alpha,
-                                                             n_restarts_optimizer=config.n_restarts,
-                                                             copy_X_train=False).fit(combined_train, y) for y in Y_pca_truncated.T]
+    #    ##############################
+    #    if method_type == "PCA":
+    #        scaler = sklearn_preprocessing.StandardScaler()
+    #        pca = sklearn_decomposition.PCA(n_components=max_n_components, svd_solver='full', whiten=False) # Include all PCs here, so we can access them later
+    #        Y_pca = pca.fit_transform(scaler.fit_transform(Y))
+    #        Y_pca_truncated = Y_pca[:,:config.n_pc]    # Select PCs here
+    #        Y_reconstructed_truncated = Y_pca_truncated.dot(pca.components_[:config.n_pc,:])
+    #        Y_reconstructed_truncated_unscaled = scaler.inverse_transform(Y_reconstructed_truncated)
+    #        explained_variance_ratio = pca.explained_variance_ratio_
+#
+#
+    #        emulators = [sklearn_gaussian_process.GaussianProcessRegressor(kernel=kernel,
+    #                                                         alpha=config.alpha,
+    #                                                         n_restarts_optimizer=config.n_restarts,
+    #                                                         copy_X_train=False).fit(combined_train, y) for y in Y_pca_truncated.T]
 
 
     ################################
