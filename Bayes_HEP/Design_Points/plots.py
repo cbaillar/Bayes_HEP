@@ -181,9 +181,15 @@ def results(size, x, all_data, samples_results, y_data_results, y_data_errors, E
             labels.append('stat + sys error')
             legend_added_for.add('data')
 
-        ax.set_xlabel(subobservable, fontsize=24)
+        if isinstance(subobservable, (list, tuple)):
+            subobservable = " ".join(subobservable).strip()
+        if isinstance(observable, (list, tuple)):
+            observable = " ".join(observable).strip()
+
         ax.set_ylabel(observable, fontsize=24)
-        ax.set_title(f'{observable} Predictions for {system} Collisions', fontsize=24)
+        ax.set_xlabel(subobservable, fontsize=24)
+        ax.set_title(f"Predictions for {system} Collisions", fontsize=24)
+
 
     fig.legend(handles, labels, loc='upper right', bbox_to_anchor=(1.05, 1), fontsize=20)
     plt.tight_layout()

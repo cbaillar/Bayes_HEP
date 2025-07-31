@@ -62,10 +62,8 @@ def ReadData(FileName):
 
     Result["Energy"] = parts[1] 
     Result["System"] = parts[2] 
-    Result["Observable"] = parts[3] 
-    Result["Subobservable"] = parts[4]
-    Result["Experiment"] = parts[4].split('_')[-1]
-    Result["Histogram"] = parts[5]
+    Result["Experiment"] = parts[3].split('_')[0]
+    Result["Histogram"] = parts[4]
 
     # First read all the header information
     for Line in open(FileName):
@@ -75,6 +73,10 @@ def ReadData(FileName):
 
         if(Items[1] == 'Version'):
             Version = Items[2]
+        elif(Items[1] == 'Observable:'):
+            Result["Observable"] = Items[2:]
+        elif(Items[1] == 'Subobservable:'):
+            Result["Subobservable"] = Items[2:]
         elif(Items[1] == 'Label'):
             Result["Label"] = Items[2:]
 
@@ -110,10 +112,8 @@ def ReadPrediction(FileName):
     Result["Model"] = parts[1]
     Result["Energy"] = parts[2] 
     Result["System"] = parts[3] 
-    Result["Observable"] = parts[4] 
-    Result["Subobservable"] = parts[5]
-    Result["Experiment"] = parts[5].split('_')[-1]
-    Result["Histogram"] = parts[6]
+    Result["Experiment"] = parts[4].split('_')[0]
+    Result["Histogram"] = parts[5]
 
     # First read all the header information
     for Line in open(FileName):
@@ -125,6 +125,10 @@ def ReadPrediction(FileName):
             Version = Items[2]
         elif(Items[1] == 'Data'):
             Result["Data"] = Items[2]
+        elif(Items[1] == 'Observable:'):
+            Result["Observable"] = Items[2:]
+        elif(Items[1] == 'Subobservable:'):
+            Result["Subobservable"] = Items[2:]
         elif(Items[1] == 'Design'):
             Result["Design"] = Items[2]
 

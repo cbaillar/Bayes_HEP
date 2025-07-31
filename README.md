@@ -1,31 +1,6 @@
 # Bayes\_HEP Instructions
 
-## 🔍 Summary
-
-**Bayes\_HEP** is a modular framework for high-energy physics parameter calibration using Bayesian inference. It integrates:
-
-- **Pythia** for Monte Carlo event generation\
-  📦 Source: [https://pythia.org](https://pythia.org)
-
-- **Rivet** for calculating observables\
-  📦 Source: [https://rivet.hepforge.org](https://rivet.hepforge.org)
-
-- **Surmise** for probabilistic surrogate modeling\
-  📦 Source: [https://surmise.readthedocs.io/en/latest/](https://surmise.readthedocs.io/en/latest/)
-
-- **scikit-learn** for emulator construction (e.g., PCA, Gaussian Process)\
-  📦 Source: [https://scikit-learn.org](https://scikit-learn.org)
-
-- **Bilby** for Bayesian inference (e.g., MCMC sampling)\
-  📦 Source: [https://bilby-dev.github.io/bilby/](https://bilby-dev.github.io/bilby/)
-
-The workflow supports both **interactive** and **batch** modes on **Docker** or **HPC systems using SLURM + Apptainer**. It allows users to:
-
-1. Generate design points from parameter priors
-2. Run physics simulations and extract Rivet observables
-3. Train emulators on model predictions
-4. Perform Bayesian calibration using experimental data
-5. Analyze and visualize posterior results
+This guide provides step-by-step instructions for running the **Bayes\_HEP** project using Docker or Apptainer (formerly Singularity), both interactively and in batch mode on HPC systems.
 
 ---
 
@@ -41,7 +16,7 @@ docker pull cbaillar/bayes_hep:latest
 
 docker run -it --rm -v "$PWD":/workdir -e WORKDIR=/workdir cbaillar/bayes_hep
 
-cp -r /usr/local/share/Bayes_HEP/Examples/Docker_New_Project .
+cp -r /usr/local/share/Bayes_HEP/Examples/New_Project .
 ```
 
 ---
@@ -50,7 +25,7 @@ cp -r /usr/local/share/Bayes_HEP/Examples/Docker_New_Project .
 
 Edit the following files in `Docker_New_Project/input/Rivet/`:
 
-- \`analyses_list.txt\` – List of Rivet analyses to run\
+- \`\` – List of Rivet analyses to run\
   Example:
 
   ```
@@ -62,17 +37,17 @@ Edit the following files in `Docker_New_Project/input/Rivet/`:
   CMS_2018_I1663452 d03-x01-y01
   ```
 
-- \`parameter_prior_list.dat\` – Set parameter prior ranges for sampling/tuning
+- \`\` – Set parameter prior ranges for sampling/tuning
 
-- \`parameter.cmnd\` – Default Pythia parameter card used as a template for all runs
+- \`\` – Default Pythia parameter card used as a template for all runs
 
 ---
 
 ### 3. Interactive Execution (Inside Container)
 
 ```sh
-python Docker_New_Project/drivers/Rivet_Main.py
-python Docker_New_Project/drivers/Bayes_Main.py
+python New_Project/drivers/Rivet_Main.py
+python New_Project/drivers/Bayes_Main.py
 ```
 
 ---
@@ -95,7 +70,7 @@ TARGET_EVENTS_PER_JOB=1000000
 Submit jobs:
 
 ```sh
-bash Docker_New_Project/Batch_Rivet/generate_design_points.sh
+bash New_Project/Batch_Rivet/Docker/generate_design_points.sh
 ```
 
 ---
@@ -112,7 +87,7 @@ apptainer build bayes_hep.sif docker://cbaillar/bayes_hep:latest
 
 apptainer shell --bind "$PWD":/workdir bayes_hep.sif
 
-cp -r /usr/local/share/Bayes_HEP/Examples/HPC_New_Project .
+cp -r /usr/local/share/Bayes_HEP/Examples/New_Project .
 ```
 
 ---
@@ -121,17 +96,17 @@ cp -r /usr/local/share/Bayes_HEP/Examples/HPC_New_Project .
 
 Edit the following files in `HPC_New_Project/input/Rivet/`:
 
-- \`analyses_list.txt\` – List of Rivet analyses (see example above)
-- \`parameter_prior_list.dat\` – Parameter prior ranges
-- \`parameter.cmnd\` – Default Pythia template
+- \`\` – List of Rivet analyses (see example above)
+- \`\` – Parameter prior ranges
+- \`\` – Default Pythia template
 
 ---
 
 ### 3. Interactive Execution (Inside Container)
 
 ```sh
-python HPC_New_Project/drivers/Rivet_Main.py
-python HPC_New_Project/drivers/Bayes_Main.py
+python New_Project/drivers/Rivet_Main.py
+python New_Project/drivers/Bayes_Main.py
 ```
 
 ---
@@ -156,7 +131,7 @@ NEVENTS=50
 Submit jobs:
 
 ```sh
-bash HPC_New_Project/Batch_Rivet/generate_design_points.sh
+bash New_Project/Batch_Rivet/HPC/generate_design_points.sh
 ```
 
 For MCMC calibration (`run_bayes.slurm`):
@@ -174,7 +149,7 @@ RESULT_SIZE=100
 Submit:
 
 ```sh
-sbatch HPC_New_Project/Batch_Rivet/run_bayes.slurm
+sbatch New_Project/Batch_Rivet/HPC/run_bayes.slurm
 ```
 
 ---
@@ -200,3 +175,14 @@ sbatch HPC_New_Project/Batch_Rivet/run_bayes.slurm
 - Double-check all `.slurm` and `.sh` files for correct paths and parameters.
 - SLURM output and error logs will be saved in the locations specified in your scripts.
 - Rebuild or restart containers after modifying input files or source code.
+
+---
+
+## ❓ Need Help?
+
+If you encounter errors:
+
+- Check SLURM logs for job status and error messages
+- Ensure all paths and inputs are correct
+- Contact your system administrator or project maintainer for support
+
