@@ -1,4 +1,3 @@
-
 import bilby
 from bilby.core.prior import PriorDict, Uniform, Constraint
 import numpy as np
@@ -25,13 +24,15 @@ def run_calibration(x, y_data_results, y_data_errors, priors, Emulators, output_
             params = np.array([self.parameters[key] for key in self.parameters])
             try:
                 if self.em_type =='surmise':
-                    model = np.squeeze(self.emulator.predict(self.x, params).mean())
-                    var = np.squeeze(self.emulator.predict(self.x, params).var())
+                    model = np.squeeze(self.emulator.predict(self.x, params).mean().T)
+                    var = np.squeeze(self.emulator.predict(self.x, params).var().T)
                     error = np.sqrt(var)
                 elif self.em_type == 'scikit': 
                     combined_result=[]
-                    combined_result.append(np.concatenate((self.x.flatten(), params.flatten())))
-                    combined_result = np.array(combined_result)
+                    params =np.atleast_1d(params)
+                    repeated = np.tile(params, (self.x.shape[0], 1))
+                    combined_result.append(np.hstack((self.x, repeated)))
+                    combined_result = np.vstack(combined_result)
                     model, error = self.emulator.predict(combined_result, return_std=True)
                     var = error**2
                 else:
@@ -76,7 +77,7 @@ def run_calibration(x, y_data_results, y_data_errors, priors, Emulators, output_
         for em_type in Emulators:
             Results={}
             emulator = Emulators[em_type][system]
-            likelihood = GaussianLikelihood(x[system].reshape(-1,1), y_data_results[system], y_data_errors[system], emulator, em_type)
+            likelihood = GaussianLikelihood(x[system], y_data_results[system], y_data_errors[system], emulator, em_type)
             
             pos0 = None
 

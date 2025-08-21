@@ -63,6 +63,7 @@ def ReadData(FileName):
     Result["Energy"] = parts[1] 
     Result["System"] = parts[2] 
     Result["Experiment"] = parts[3].split('_')[0]
+    Result["Inspire"] = parts[3]
     Result["Histogram"] = parts[4]
 
     # First read all the header information

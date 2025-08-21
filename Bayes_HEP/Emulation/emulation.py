@@ -15,12 +15,14 @@ def train_surmise(Emulators, x, y_train_results, train_points, validation_points
     Surmise_train = {}
 
     for system in x.keys():
-        print(f"Training Surmise emulator for {system} system.")        
+        print(f"Training Surmise emulator for {system} system.")     
+
         emu = emulator(x=x[system], theta=train_points, f=y_train_results[system].T, method=method_type)
         Emulators['surmise'][system] = emu
 
         Surmise_val[system] = emu.predict(x=x[system], theta=validation_points).mean().T
         Surmise_train[system] = emu.predict(x=x[system], theta=train_points).mean().T
+
     
     with open(f"{output_dir}/emulator/surmise.pkl", "wb") as f:
         dill.dump(Emulators['surmise'], f)
@@ -52,20 +54,28 @@ def train_scikit(Emulators, x, y_train_results, train_points, validation_points,
     for system in x.keys():
         print(f"Training Scikit-learn emulator for {system} system.")
 
-        input_dim = len(x[system]) + train_points.shape[1]  # dynamically calculate for each system
+        input_dim = x[system].shape[1] + train_points.shape[1]  # dynamically calculate for each system
         length_scale = np.ones(input_dim)
         kernel = 1.0 * kernels.Matern(length_scale=length_scale, length_scale_bounds=(1e-2, 1e3))
 
         combined_train = []
         combined_val = []
 
+        # Train points
         for train_point in train_points:
-            combined_train.append(np.concatenate((x[system], train_point)))
-        for val_point in validation_points:
-            combined_val.append(np.concatenate((x[system], val_point)))
+            train_point = np.atleast_1d(train_point)  # shape (n_params,)
+            repeated = np.tile(train_point, (x[system].shape[0], 1))  # shape (n_samples, n_params)
+            combined_train.append(np.hstack((x[system], repeated)))
 
-        combined_train = np.array(combined_train)
-        combined_val = np.array(combined_val)
+        # Validation points
+        for val_point in validation_points:
+            val_point = np.atleast_1d(val_point)
+            repeated = np.tile(val_point, (x[system].shape[0], 1))
+            combined_val.append(np.hstack((x[system], repeated)))
+        
+        combined_train = np.vstack(combined_train)
+        combined_val = np.vstack(combined_val)
+
 
     #    ##############################
     #    if method_type == "PCA":
@@ -87,7 +97,7 @@ def train_scikit(Emulators, x, y_train_results, train_points, validation_points,
     ################################
 
         gpr = GPR(kernel=kernel, alpha=0, n_restarts_optimizer=0)
-        gpr.fit(combined_train, y_train_results[system])
+        gpr.fit(combined_train, y_train_results[system].reshape(-1))
 
         Emulators['scikit'][system] = gpr
         Scikit_train[system] = gpr.predict(combined_train)
@@ -109,17 +119,26 @@ def load_scikit(Emulators, x, train_points, validation_points, output_dir):
 
     for system in x.keys():
         print(f"Loading Scikit-learn emulator for {system} system.")
-    
+
+
         combined_train = []
         combined_val = []
 
+        # Train points
         for train_point in train_points:
-            combined_train.append(np.concatenate((x[system], train_point)))
-        for val_point in validation_points:
-            combined_val.append(np.concatenate((x[system], val_point)))
+            train_point = np.atleast_1d(train_point)  # shape (n_params,)
+            repeated = np.tile(train_point, (x[system].shape[0], 1))  # shape (n_samples, n_params)
+            combined_train.append(np.hstack((x[system], repeated)))
 
-        combined_train = np.array(combined_train)
-        combined_val = np.array(combined_val)
+        # Validation points
+        for val_point in validation_points:
+            val_point = np.atleast_1d(val_point)
+            repeated = np.tile(val_point, (x[system].shape[0], 1))
+            combined_val.append(np.hstack((x[system], repeated)))
+        
+        combined_train = np.vstack(combined_train)
+        combined_val = np.vstack(combined_val)
+    
 
         gpr = Emulators['scikit'][system]
 

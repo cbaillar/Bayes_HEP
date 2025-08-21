@@ -13,10 +13,13 @@ def get_system(filename):
 
 
 def get_data(all_data, system):
-    for data_entry in all_data:
-        #system = get_system(data_entry["FileName"])
-
-        x_values = np.array(data_entry["Data"]["x"])
+    for i, data_entry in enumerate(all_data):
+    #for data_entry in all_data:
+        #x_values = np.array(data_entry["Data"]["x"],i)
+        x_values = np.column_stack((
+            np.full(len(data_entry["Data"]["x"]), i),           # Λ column
+            np.array(data_entry["Data"]["x"])                   # subobservable column
+        ))
         x_errors_values = np.array(data_entry["Data"]["xerr"])
         y_data_values = np.array(data_entry["Data"]["y"])
         y_data_errors_values = np.array(data_entry["Data"]["yerr"])
@@ -38,7 +41,6 @@ def get_predictions(all_predictions, train_indices, validation_indices, system):
     for prediction in all_predictions:
         if "values" not in prediction["FileName"]:
             continue
-        #system = get_system(prediction["FileName"])
 
         prediction_values = np.array(prediction["Prediction"])
         prediction_errors = np.array(prediction["PredictionErrors"])

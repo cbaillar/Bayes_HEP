@@ -62,13 +62,14 @@ def remove_outliers(data):
  
 
 def plot_combined_box_rmse(ax, y_true, predictions_dict, label):
-    y_true = np.asarray(y_true)
-    
+    y_true = np.asarray(y_true).reshape(-1,1)
+
     rmse_filtered_list = []
     tick_labels = []
 
     for emulator_name, pred in predictions_dict.items():
-        pred = np.asarray(pred)
+        pred = np.asarray(pred).reshape(-1,1)
+
         rmse = np.sqrt((pred - y_true) ** 2)
         rmse_filtered = remove_outliers(rmse.flatten())
         rmse_filtered_list.append(rmse_filtered)
@@ -79,7 +80,7 @@ def plot_combined_box_rmse(ax, y_true, predictions_dict, label):
     ax.tick_params(axis='both', which='major', labelsize=20)
 
 
-def plot_rmse_comparison(x, y_train_results, y_val_results, PredictionTrain, PredictionVal, output_dir):
+def plot_rmse_comparison(y_train_results, y_val_results, PredictionTrain, PredictionVal, output_dir):
     systems = list(y_train_results.keys())
     emulator_names = list(PredictionTrain.keys())  
 
@@ -122,75 +123,96 @@ def plot_trace(samples, parameter_names, title):
     plt.tight_layout(rect=[0, 0, 1, 0.97])
 
 
-def results(size, x, all_data, samples_results, y_data_results, y_data_errors, Emulators, output_dir):
-    num_systems = len(x.keys())
-    fig, axes = plt.subplots(1, num_systems, figsize=(10 * num_systems, 8))
-
-    if num_systems == 1:
-        axes = [axes]
-
-    handles, labels = [], []
-    legend_added_for = set() 
+def results(size, x, all_data, samples_results, y_data_results, y_data_errors, Emulators, n_hist, output_dir):
     
     for i, system in enumerate(x.keys()):
-        ax = axes[i]  
-
-        observable     = all_data[system][0]["Observable"]
-        subobservable  = all_data[system][0]["Subobservable"]
-        experiment     = all_data[system][0]["Experiment"].upper()
-        energy         = all_data[system][0]["Energy"]
-        #centrality     = all_data[system][0]["Centrality"]
 
         for em_type in Emulators:
             # Draw samples from the emulator
             rows = np.random.choice(samples_results[system][em_type].shape[0], size=size, replace=False)
             samples = samples_results[system][em_type][rows]
-
+            
             #Make predictions using the emulator
             if em_type == 'surmise':
-                post = Emulators[em_type][system].predict(x[system].reshape(-1, 1), samples).mean()
+                sur_post = Emulators[em_type][system].predict(x[system], samples).mean()
+
             elif em_type == 'scikit':
                 combined_result=[]
+
                 for sample in samples:  
-                    combined_result.append(np.concatenate((x[system], sample))) 
-                combined_result = np.array(combined_result)
+                    sample = np.atleast_1d(sample)
+                    repeated = np.tile(sample, (x[system].shape[0], 1))  
+                    combined_result.append(np.hstack((x[system], repeated)))
+                combined_result = np.vstack(combined_result)
                 post = Emulators[em_type][system].predict(combined_result)  
-                post = post.T
+                post = np.asarray(post).reshape(-1)
+                sk_post = post.reshape(samples.shape[0], x[system].shape[0]).T  
 
-            upper = np.percentile(post.T, 97.5, axis=0)
-            lower = np.percentile(post.T, 2.5, axis=0)
-            median = np.percentile(post.T, 50, axis=0)
-
-            # Plot predictions
-            line_pred = ax.plot(x[system], median, label=f'{em_type} Prediction', alpha=0.7)
-            ax.fill_between(x[system], lower, upper, alpha=0.3)
-
-            if em_type not in legend_added_for:
-                handles.append(line_pred[0])
-                labels.append(f'Calibrated Prediction {em_type.capitalize()}')
-                legend_added_for.add(em_type)
-
-        # Plot experimental error bars
-        line_err = ax.errorbar(
-            x[system], y_data_results[system], yerr=[y_data_errors[system], y_data_errors[system]],
-            color='black', fmt='o', markersize=5, capsize=3, label='stat + sys error'
-        )
-
-        if 'data' not in legend_added_for:
-            handles.append(line_err)
-            labels.append('stat + sys error')
-            legend_added_for.add('data')
-
-        if isinstance(subobservable, (list, tuple)):
-            subobservable = " ".join(subobservable).strip()
-        if isinstance(observable, (list, tuple)):
-            observable = " ".join(observable).strip()
-
-        ax.set_ylabel(observable, fontsize=24)
-        ax.set_xlabel(subobservable, fontsize=24)
-        ax.set_title(f"Predictions for {system} Collisions", fontsize=24)
+        for j in range(n_hist[system]):
+            
+            num_systems = len(x.keys())
+            fig, ax = plt.subplots(figsize=(10, 8))
 
 
-    fig.legend(handles, labels, loc='upper right', bbox_to_anchor=(1.05, 1), fontsize=20)
-    plt.tight_layout()
-    plt.savefig(f"{output_dir}/plots/Results", bbox_inches='tight')
+            handles, labels = [], []
+            legend_added_for = set() 
+        
+            x_param = x[system][x[system][:, 0] == j]
+            x_val = x_param[:, 1]
+
+            nbins = len(x_param)   # number of bins per histogram
+            start = j * nbins
+            end   = start + nbins
+        
+            for em_type in Emulators:
+
+                if em_type == 'surmise':
+                    post = sur_post[start:end, :] 
+                elif em_type == 'scikit':
+                    post = sk_post[start:end, :]  
+                    
+                observable     = all_data[system][j]["Observable"]
+                subobservable  = all_data[system][j]["Subobservable"]
+                experiment     = all_data[system][j]["Experiment"].upper()
+                energy         = all_data[system][j]["Energy"]
+                inspire        = all_data[system][j]["Inspire"]
+                histogram      = all_data[system][j]["Histogram"]
+                
+                upper = np.percentile(post.T, 97.5, axis=0)
+                lower = np.percentile(post.T, 2.5, axis=0)
+                median = np.percentile(post.T, 50, axis=0)
+                
+                # Plot predictions
+                line_pred = ax.plot(x_val, median, label=f'{em_type} Prediction', alpha=0.7)
+                ax.fill_between(x_val, lower, upper, alpha=0.3)
+
+                if em_type not in legend_added_for:
+                    handles.append(line_pred[0])
+                    labels.append(f'Calibrated Prediction {em_type.capitalize()}')
+                    legend_added_for.add(em_type)
+
+            # Plot experimental error bars
+            line_err = ax.errorbar(
+                x_val, y_data_results[system][start:end], yerr=[y_data_errors[system][start:end], y_data_errors[system][start:end]],
+                color='black', fmt='o', markersize=5, capsize=3, label='stat + sys error'
+            )
+            
+            if 'data' not in legend_added_for:
+                handles.append(line_err)
+                labels.append('stat + sys error')
+                legend_added_for.add('data')
+
+            if isinstance(subobservable, (list, tuple)):
+                subobservable = " ".join(subobservable).strip()
+            if isinstance(observable, (list, tuple)):
+                observable = " ".join(observable).strip()
+                
+            ax.set_ylabel(observable, fontsize=24)
+            ax.set_xlabel(subobservable, fontsize=24)
+            ax.set_title(f"Predictions for {system} Collisions", fontsize=24)
+
+            os.makedirs(f"{output_dir}/plots/results/{inspire}", exist_ok=True)
+
+            fig.legend(handles, labels, loc='upper right', bbox_to_anchor=(1.01, 1), fontsize=16)
+            plt.tight_layout(rect=[0, 0, 0.85, 1])
+            plt.savefig(f"{output_dir}/plots/results/{inspire}/{histogram}", bbox_inches='tight')
