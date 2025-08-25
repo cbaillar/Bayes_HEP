@@ -31,10 +31,10 @@ validation_size = 20        #percentage of design points used for validation
 Train_Surmise = True
 Load_Surmise = True
 
-Train_Scikit = False 
-Load_Scikit = False 
+Train_Scikit = True
+Load_Scikit = True
 
-PCA = True 
+PCA = False 
 
 ######## Calibration
 Run_Caibration = True 
@@ -43,7 +43,7 @@ npool = 5               #Number of CPU to use for sampler
 Samples = 100           #Number of MCMC samples  
 nburn = 0.25 * Samples  #burn in samples
 percent = 0.15          # Get traces for the last percentage of samples
-Load_Calibration = True 
+Load_Calibration = True
 
 ####### Results 
 size = 1000  # Number of samples for Results
@@ -75,6 +75,7 @@ prediction_dir, data_dir = f"{main_dir}/input/Prediction", f"{main_dir}/input/Da
 Data = {}
 Predictions = {}
 all_data = {}
+n_hist = {}
 
 for system in Coll_System:
     System, Energy = system.split('_')[0], system.split('_')[1]  
@@ -85,6 +86,8 @@ for system in Coll_System:
 
     all_predictions = [Reader.ReadPrediction(f) for f in prediction_files]
     all_data[sys] = [Reader.ReadData(f) for f in data_files]
+
+    n_hist[sys] = len(prediction_files)
 
     x, x_errors, y_data_results, y_data_errors = DataPred.get_data(all_data[sys], sys)
     y_train_results, y_train_errors, y_val_results, y_val_errors = DataPred.get_predictions(all_predictions, train_indices, validation_indices, sys)
@@ -125,7 +128,8 @@ elif Load_Scikit:
     Emulators['scikit'], PredictionVal['scikit_val'], PredictionTrain['scikit_train'] = Emulation.load_scikit(Emulators['scikit'], x, train_points, validation_points, output_dir)
 
 os.makedirs(f"{output_dir}/plots/emulators/", exist_ok=True)
-Plots.plot_rmse_comparison(x, y_train_results, y_val_results, PredictionTrain, PredictionVal, output_dir)
+
+Plots.plot_rmse_comparison(y_train_results, y_val_results, PredictionTrain, PredictionVal, output_dir)
     
 ########### Calibration ###########
 if Run_Caibration:
@@ -152,6 +156,6 @@ if Result_plots:
         print(f"Warning: Minimum samples ({min_samples}) is less than requested size ({size}). Adjusting size to {min_samples}.")
         size = min_samples
 
-    Plots.results(size, x, all_data, samples_results, y_data_results, y_data_errors, Emulators, output_dir)
+    Plots.results(size, x, all_data, samples_results, y_data_results, y_data_errors, Emulators, n_hist, output_dir)
     
 print("done")

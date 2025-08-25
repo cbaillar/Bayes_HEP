@@ -9,9 +9,10 @@ NEVENTS=$6
 SEED=$7
 PARAM_TAG=$8
 MERGE_TAG=$9  
+PT_MIN=${10}
+PT_MAX=${11}
 
 MODEL=pythia8
-SOFTQCD="on"
 TUNE=14  # 14 = Monash 2013
 
 PYPATH=/usr/local/share/Pythia8/examples
@@ -85,7 +86,6 @@ sed -i \
       -e "s/^\(Beams:idA *= *\).*\(!.*\)/\1${IDA}                        \2/" \
       -e "s/^\(Beams:idB *= *\).*\(!.*\)/\1${IDB}                        \2/" \
       -e "s/^\(Beams:eCM *= *\).*\(!.*\)/\1${ECM}.                        \2/" \
-      -e "s/^\(SoftQCD:all *= *\).*\(!.*\)/\1${SOFTQCD}                        \2/" \
       main144.cmnd
 
 
@@ -97,7 +97,18 @@ for ((i=1; i<${#ARR[@]}; i+=2)); do
     VALUES+=("${ARR[i]}")
 done
 
-# 2) Overwrite only tuning parameters (after marker)
+# 2)
+# ── Inject pTHat cuts in the fixed section ─────────────
+if [[ "$PT_MIN" != "-1" && "$PT_MAX" != "-1" ]]; then
+  # insert both in the right order
+  sed -i "/^! *These are fixed/a\\
+PhaseSpace:pTHatMin = ${PT_MIN}.\\
+PhaseSpace:pTHatMax = ${PT_MAX}." parameter.cmnd
+else
+  [[ "$PT_MIN" != "-1" ]] && sed -i "/^! *These are fixed/a PhaseSpace:pTHatMin = ${PT_MIN}." parameter.cmnd
+  [[ "$PT_MAX" != "-1" ]] && sed -i "/^! *These are fixed/a PhaseSpace:pTHatMax = ${PT_MAX}." parameter.cmnd
+fi
+# 3) Overwrite only tuning parameters (after marker)
 val_idx=0
 tmpfile=$(mktemp)
 overwrite_mode=false

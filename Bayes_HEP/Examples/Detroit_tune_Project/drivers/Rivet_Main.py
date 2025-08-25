@@ -22,6 +22,8 @@ Rivet_Setup = True
 nsamples = 10              #number of design points
 model = 'pythia8'           #only pythia8 (atm)
 Run_Model = True            #run design points through model and Rivet
+PT_Min = -1 
+PT_Max = -1
 nevents = 1000              # number of events for model in each run
 Rivet_Merge =True
 Write_input_Rivet = True   #gets Data/Pred info from html files 
@@ -158,7 +160,7 @@ if Run_Model:
 
             subprocess.run([
                 'bash', f'/usr/local/share/Bayes_HEP/Design_Points/Models/{model}/scripts/run_{model}.sh',
-                ','.join(system_analyses), input_dir, project_dir, System, Energy, str(nevents), str(model_seed), param_tag, merge_tag], check=True)
+                ','.join(system_analyses), input_dir, project_dir, System, Energy, str(nevents), str(model_seed), param_tag, merge_tag, PT_Min, PT_Max], check=True)
 
 ############# Rivet Merge/HTML #################
 if Rivet_Merge:

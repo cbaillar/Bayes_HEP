@@ -18,6 +18,8 @@ COLLISIONS=$5
 NEVENTS=$6
 CONTAINER=$7
 BIND_PATH=$8
+PT_MIN=$9
+PT_MAX=${10}
 
 SEED=$SLURM_JOB_ID
 
@@ -37,6 +39,8 @@ apptainer exec --bind "$BIND_PATH" "$CONTAINER" \
     --nevents "$NEVENTS" \
     --Run_Model True \
     --Run_Batch True \
+    --PT_Min "$PT_MIN"\
+    --PT_Max "$PT_MAX"\
     --Rivet_Merge False \
     --Write_input_Rivet False \
     --Coll_System ${COLLISIONS}

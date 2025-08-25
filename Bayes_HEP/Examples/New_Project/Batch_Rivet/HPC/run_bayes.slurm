@@ -21,7 +21,7 @@ RESULT_SIZE=100
 
 
 WORKDIR="${WORKDIR:-/workdir}"
-MAIN_DIR="$WORKDIR/New_Project"
+MAIN_DIR="$WORKDIR/Detroit_tune_Project"
 MAIN_SCRIPT="$MAIN_DIR/Batch_Rivet/Bayes_Main.py"
 
 CONTAINER="$USER_DIR/Bayes_HEP/bayes_hep.sif"

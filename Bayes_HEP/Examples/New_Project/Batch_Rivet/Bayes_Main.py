@@ -149,7 +149,7 @@ else:
     Emulators['scikit'], PredictionVal['scikit_val'], PredictionTrain['scikit_train'] = Emulation.load_scikit(Emulators['scikit'], x, train_points, validation_points, output_dir)
 
 os.makedirs(f"{output_dir}/plots/emulators/", exist_ok=True)
-Plots.plot_rmse_comparison(x, y_train_results, y_val_results, PredictionTrain, PredictionVal, output_dir)
+Plots.plot_rmse_comparison(y_train_results, y_val_results, PredictionTrain, PredictionVal, output_dir)
     
 ########### Calibration ###########
 if Run_Calibration:

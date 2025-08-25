@@ -16,13 +16,15 @@ parser = argparse.ArgumentParser(description="Run Rivet/Model analysis pipeline.
 parser.add_argument("--main_dir", type=str, default="New_Project")
 parser.add_argument("--seed", type=int, default=43)
 parser.add_argument("--model_seed", type=int, default=283)
-parser.add_argument("--clear_rivet_models", type=lambda x: x.lower() == "true", default=True)
+parser.add_argument("--clear_rivet_models", type=lambda x: x.lower() == "true", default=False)
 parser.add_argument("--Get_Design_Points", type=lambda x: x.lower() == "true", default=True)
 parser.add_argument("--nsamples", type=int, default=10)
 parser.add_argument("--Rivet_Setup", type=lambda x: x.lower() == "true", default=True)
 parser.add_argument("--model", type=str, default="pythia8")
 parser.add_argument("--Run_Model", type=lambda x: x.lower() == "true", default=True)
 parser.add_argument("--Run_Batch", type=lambda x: x.lower() == "true", default=True)
+parser.add_argument("--PT_Min", type=int, default=-1)
+parser.add_argument("--PT_Max", type=int, default=-1)
 parser.add_argument("--nevents", type=int, default=1000)
 parser.add_argument("--Rivet_Merge", type=lambda x: x.lower() == "true", default=True)
 parser.add_argument("--Write_input_Rivet", type=lambda x: x.lower() == "true", default=True)
@@ -46,6 +48,8 @@ Rivet_Setup = args.Rivet_Setup
 model = args.model
 Run_Model = args.Run_Model
 Run_Batch = args.Run_Batch
+PT_Min = args.PT_Min
+PT_Max = args.PT_Max
 nevents = args.nevents
 Rivet_Merge = args.Rivet_Merge
 Write_input_Rivet = args.Write_input_Rivet
@@ -195,7 +199,7 @@ if Run_Model:
             subprocess.run([
                 'bash',
                 f'/usr/local/share/Bayes_HEP/Design_Points/Models/{model}/scripts/run_{model}.sh',
-                ','.join(system_analyses), input_dir, project_dir, System, Energy, str(nevents), str(model_seed), param_tag, merge_tag], check=True)
+                ','.join(system_analyses), input_dir, project_dir, System, Energy, str(nevents), str(model_seed), param_tag, merge_tag, str(PT_Min), str(PT_Max)], check=True)
 
 
 ############# Rivet Merge/HTML #################
