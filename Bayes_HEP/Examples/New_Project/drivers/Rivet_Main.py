@@ -7,11 +7,14 @@ import os
 import shutil
 import subprocess
 import sys
+import glob
+import random
+import numpy as np
 
 ###########################################################
 ################### SCRIPT PARAMETERS #####################
 work_dir= os.environ.get('WORKDIR', '/workdir')  # Default to /workdir
-main_dir = f"{work_dir}/Detroit_tune_Project"
+main_dir = f"{work_dir}/New_Project"
 seed = 43                   #seed for LHS
 model_seed = 283            #seed for model
 
@@ -37,34 +40,76 @@ if clear_rivet_models and os.path.exists(models_dir):
     print(f"Clearing output directory: {models_dir}")
     shutil.rmtree(models_dir)
 
-############## Design Points ####################
+# ############## Design Points ####################
 
 if Get_Design_Points: 
     print("Generating design points.")
     os.makedirs(f"{main_dir}/input/Design", exist_ok=True)
-    Design_file = 'Design__Rivet.dat'
+
+    index_numbers = []
+    index_files = glob.glob(f"{main_dir}/input/Design/Design__Rivet__*.dat")
+    for file in index_files:
+        num = int(file.split("__")[-1].split(".")[0])
+        index_numbers.append(num)
+
+    max_index = max(index_numbers) if index_numbers else 0
+    max_index = max_index + 1 
+
+    Design_file = f'Design__Rivet__{max_index}.dat'
     output_file = f'{main_dir}/input/Design/{Design_file}'
     shutil.copy(f"{main_dir}/input/Rivet/parameter_prior_list.dat", output_file)
 
     RawDesign = Reader.ReadDesign(f'{main_dir}/input/Rivet/parameter_prior_list.dat')
-    priors, parameter_names, dim= DesignPoints.get_prior(RawDesign)
-    design_points = DesignPoints.get_design(nsamples, priors, seed)
+    priors, parameter_names, dim = DesignPoints.get_prior(RawDesign)
+    
+    existing_rows = set()
+    for oldfile in glob.glob(f"{main_dir}/input/Design/*.dat"):
+        with open(oldfile) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                existing_rows.add(line)
+    
+    run_duplicate_check = True 
+    while run_duplicate_check:
+        design_points = DesignPoints.get_design(nsamples, priors, seed)
+        design_points = np.atleast_2d(design_points)  
+        current_rows = {' '.join(f"{val:.18e}" for val in row) for row in design_points}
+        if current_rows.isdisjoint(existing_rows):
+            print("🟢 No duplicates detected")
+            run_duplicate_check = False        
+        else:
+            print("🟡 Duplicates detected, re-generating design_points")
+            seed = random.randint(1, 2**32 - 1) 
 
     with open(output_file, 'a') as f:
-    # Write index line based on row positions
         index_line = '\n' + "# Design point indices (row index): " + ' '.join(str(i) for i in range(len(design_points))) + '\n'
+        f.write(f"\n\n# LHS Seed = {seed}; Number of Design Points = {nsamples}")
         f.write(index_line)
-
-        # Write design points
         for row in design_points:
             f.write(' '.join(f"{val:.18e}" for val in row) + '\n')
     print(f"Appended {len(design_points)} design points to {output_file}")
 
 else:
     print("Loading design points from input directory.")
-    RawDesign = Reader.ReadDesign(f'{main_dir}/input/Design/Design__Rivet.dat')
-    priors, parameter_names, dim= DesignPoints.get_prior(RawDesign)
-    design_points = RawDesign['Design']
+
+    index_numbers = []
+    index_files = glob.glob(f"{main_dir}/input/Design/Design__Rivet__*.dat")
+    for file in index_files:
+        num = int(file.split("__")[-1].split(".")[0])
+        index_numbers.append(num)
+
+    if not index_numbers:  
+        print("No Design files in directory. Please generate design points.")
+        sys.exit(1)
+
+    max_index = max(index_numbers)
+
+    Design_file = f'Design__Rivet__{max_index}.dat'
+    RawDesign = Reader.ReadDesign(f'{main_dir}/input/Design/{Design_file}')
+    priors, parameter_names, dim = DesignPoints.get_prior(RawDesign)
+    design_points = np.atleast_2d(RawDesign['Design'])  
 
 ################# Rivet Analyses ####################
 input_dir = f'{main_dir}/input/Rivet'
@@ -160,7 +205,7 @@ if Run_Model:
 
             subprocess.run([
                 'bash', f'/usr/local/share/Bayes_HEP/Design_Points/Models/{model}/scripts/run_{model}.sh',
-                ','.join(system_analyses), input_dir, project_dir, System, Energy, str(nevents), str(model_seed), param_tag, merge_tag, PT_Min, PT_Max], check=True)
+                ','.join(system_analyses), input_dir, project_dir, System, Energy, str(nevents), str(model_seed), param_tag, merge_tag, str(PT_Min), str(PT_Max)], check=True)
 
 ############# Rivet Merge/HTML #################
 if Rivet_Merge:
@@ -206,7 +251,7 @@ if Write_input_Rivet:
                         obs, subobs = RivetParser.extract_labels(labelfile)
 
                         input_data_name = f"{main_dir}/input/Data/Data__{Energy}__{System}__{analysis}__{hist}"
-                        input_pred_name = f"{main_dir}/input/Prediction/Prediction__{model}__{Energy}__{System}__{analysis}__{hist}"
+                        input_pred_name = f"{main_dir}/input/Prediction/Prediction__{model}__{Energy}__{System}__{analysis}__{hist}__DG_{max_index}"
 
                         RivetParser.extract_data(datafile, model, input_data_name, input_pred_name, obs, subobs, DP)
 

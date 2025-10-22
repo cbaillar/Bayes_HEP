@@ -34,19 +34,14 @@ for ANALYSIS in "${ANALYSIS_LIST[@]}"; do
     cd ..
     continue
   fi
-
-  if [ -f "Rivet${ANALYSIS}.so" ]; then
+  
+  rivet-build Rivet${ANALYSIS}.so ${ANALYSIS}.cc
+  if [ $? -eq 0 ] && [ -f "Rivet${ANALYSIS}.so" ]; then
     BUILD_STATUS="build_success"
-    echo "Rivet${ANALYSIS}.so already exists, skipping build."
+    echo "Successfully built Rivet${ANALYSIS}.so"
   else
-    rivet-build Rivet${ANALYSIS}.so ${ANALYSIS}.cc
-    if [ $? -eq 0 ] && [ -f "Rivet${ANALYSIS}.so" ]; then
-      BUILD_STATUS="build_success"
-      echo "Successfully built Rivet${ANALYSIS}.so"
-    else
-      BUILD_STATUS="build_failed"
-      echo "$ANALYSIS failed to build Rivet${ANALYSIS}.so"
-    fi
+    BUILD_STATUS="build_failed"
+    echo "$ANALYSIS failed to build Rivet${ANALYSIS}.so"
   fi
 
   echo "$ANALYSIS $STATUS $BUILD_STATUS" >> "$LOG_FILE"

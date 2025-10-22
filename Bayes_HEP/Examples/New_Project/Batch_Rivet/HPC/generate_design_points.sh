@@ -16,9 +16,9 @@ TOTAL_EVENTS=100    # Total number of events
 NEVENTS=100        # Events per job
 
 # === PATHS ===
-MAIN_DIR="${WORKDIR:-/workdir}/Detroit_tune_Project"
+MAIN_DIR="${WORKDIR:-/workdir}/New_Project"
 MAIN_SCRIPT="$MAIN_DIR/Batch_Rivet/Rivet_Main.py"
-PROJ_DIR="$USER_DIR/Bayes_HEP/Detroit_tune_Project"
+PROJ_DIR="$USER_DIR/Bayes_HEP/New_Project"
 HPC_DIR="$PROJ_DIR/Batch_Rivet/HPC"
 
 CONTAINER="$USER_DIR/Bayes_HEP/bayes_hep.sif"

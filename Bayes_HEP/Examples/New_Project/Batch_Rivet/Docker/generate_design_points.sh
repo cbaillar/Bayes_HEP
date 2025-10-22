@@ -16,7 +16,7 @@ CPU=5                   # USER sets how many CPUs to use
 TARGET_EVENTS_PER_JOB=1000000
 
 # === PATHS ===
-MAIN_DIR="${WORKDIR:-/workdir}/Detroit_tune_Project"
+MAIN_DIR="${WORKDIR:-/workdir}/New_Project"
 MAIN_SCRIPT="$MAIN_DIR/Batch_Rivet/Rivet_Main.py"
 
 # Safe random seed in 32-bit range
