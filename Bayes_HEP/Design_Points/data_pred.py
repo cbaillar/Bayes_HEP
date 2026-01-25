@@ -73,8 +73,8 @@ def get_design_index(main_dir):
 def get_max_design_index(main_dir):
     index_files = glob.glob(f"{main_dir}/input/Design/Design__Rivet__*.dat")
     index_files = [file for file in index_files if "Merged" not in file]
-    index_files = sorted(index_files, key=lambda file: int(file.split("")[-1].split(".")[0]))
-    index_numbers = [int(file.split("")[-1].split(".")[0]) for file in index_files]
+    index_files = sorted(index_files, key=lambda file: int(file.split("__")[-1].split(".")[0]))
+    index_numbers = [int(file.split("__")[-1].split(".")[0]) for file in index_files]
     max_index = max(index_numbers) if index_numbers else 0
     return index_files, max_index
 
