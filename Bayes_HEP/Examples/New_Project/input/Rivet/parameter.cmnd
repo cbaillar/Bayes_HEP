@@ -1,5 +1,7 @@
 ! Used for Bayesian Parameterization 
 ! These are fixed
+Beams:idA = 2212                    
+Beams:idB = 2212
 PDF:pSet = 17
 MultipartonInteractions:ecmRef = 200
 MultipartonInteractions:bprofile = 2
